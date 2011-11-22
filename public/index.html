@@ -4,10 +4,43 @@
 <head>
     <title>Angular JS Experiments</title>
     <script src="js/angular-0.9.19.js" type="text/javascript" ng:autobind></script>
+    <script type="text/javascript">
+        var contacts;
+        function ContactsController($xhr)
+        {
+            var self = this;
+
+            $xhr('GET', '/contacts.php', function(code, response){
+                self.contacts = response;
+            });
+
+            this.contacts = self.contacts;
+        }
+
+        ContactsController.prototype =
+        {
+            fetch: function()
+            {
+                this.contacts = contacts;
+            }
+        };
+        ContactsController.$inject = ['$xhr'];
+    </script>
 </head>
 <body>
-    <label for="name">Nome:</label>
-    <input type="text" name="name"/>
-    <p>Olá {{ name }}!</p>
+    <label for="query">Find: </label>
+    <input id="query" type="text" name="query" />
+
+    <br/>
+    <br/>
+    
+    <div ng:controller="ContactsController">
+        <div ng:init="fetch()">
+            <ul>
+                <li ng:repeat="contact in contacts.$filter(query)">{{contact.name}} <<a href="mailto:{{contact.email}}">{{contact.email}}</a>></>
+            </ul>
+
+        </div>
+    </div>
 </body>
 </html>
